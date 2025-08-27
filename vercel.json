@@ -30,10 +30,5 @@
     "MONGO_URL": "@mongo_url",
     "DB_NAME": "@db_name",
     "REACT_APP_BACKEND_URL": "https://da-palmquist-portfolio-2025-2-git-main-da-palmquists-projects.vercel.app"
-  },
-  "functions": {
-    "backend/server.py": {
-      "runtime": "python3.9"
-    }
   }
 }
