@@ -1,4 +1,4 @@
-
+{
   "version": 2,
   "builds": [
     {
@@ -9,7 +9,7 @@
       }
     },
     {
-      "src": "backend/server.py", 
+      "src": "backend/server.py",
       "use": "@vercel/python"
     }
   ],
@@ -36,3 +36,4 @@
       "runtime": "python3.9"
     }
   }
+}
