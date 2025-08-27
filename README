@@ -1,0 +1,60 @@
+# D.A. Palmquist Portfolio
+
+## 🎨 Professional Portfolio for Comic Book Artist & AI Pioneer
+
+A cutting-edge full-stack portfolio showcasing the creative work of Peter D. Allen under the pseudonym D.A. Palmquist, featuring the Principia multimedia franchise (rebranded from Frontier: 2170).
+
+### ✨ Key Features
+
+- **🎧 AI Audiobook Player** - Functional audio player with ElevenLabs AI narration
+- **📚 Published Works** - Showcase of Frontier: 2170 graphic novel series
+- **🎨 Original Concept Art** - Character designs and world-building visuals
+- **🤖 AI Integration** - Demonstrates cutting-edge generative AI workflows
+- **📱 Mobile Responsive** - Perfect experience across all devices
+- **⚡ Dark Futuristic Theme** - Electric Amber accent color scheme
+
+### 🏗️ Tech Stack
+
+**Frontend:**
+- React 19 with TypeScript
+- Tailwind CSS for styling
+- Shadcn/UI component library
+- Axios for API communication
+- React Router for navigation
+
+**Backend:**
+- FastAPI (Python)
+- MongoDB with Motor (async driver)
+- Pydantic for data validation
+- Contact form handling
+- Audio interaction analytics
+
+**Deployment:**
+- Vercel for hosting
+- MongoDB Atlas for database
+- Custom domain: da-palmquist-portfolio.com
+
+### 🎯 Portfolio Sections
+
+1. **Hero Section** - Professional introduction
+2. **About** - Artist background and mission
+3. **Skills** - Technical, Creative, and Business competencies  
+4. **Experience** - Detailed work history
+5. **Projects** - Featured works with real Amazon book covers
+6. **Principia Deep Dive** - Interactive AI audiobook demonstration
+7. **Contact** - Functional contact form with validation
+
+### 🚀 Live Demo
+
+Visit: [https://da-palmquist-portfolio.com](https://da-palmquist-portfolio.com)
+
+### 🛠️ Local Development
+
+```bash
+# Install dependencies
+cd frontend && yarn install
+cd ../backend && pip install -r requirements.txt
+
+# Start development servers
+# Frontend: http://localhost:3000
+# Backend: http://localhost:8001
