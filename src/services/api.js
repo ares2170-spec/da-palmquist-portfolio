@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { portfolioData as mockPortfolioData } from '../mock';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API_BASE = `${BACKEND_URL}/api`;
 
@@ -43,11 +42,20 @@ getPortfolioData: async () => {
   try {
     const response = await api.get('/portfolio/data');
     return response.data;
-  } catch (error) {
-    console.error('Failed to fetch portfolio data, falling back to mock data:', error);
-    return mockPortfolioData;
-  }
-},
+ } catch (error) {
+  console.error('Failed to fetch portfolio data:', error);
+  // Temporary: return hardcoded data instead of importing mock file
+  return {
+    hero: {
+      name: "Peter D. Allen",
+      title: "Visionary Comic Book Artist & AI Pioneer", 
+      tagline: "Pioneering the next generation of entertainment franchises",
+      location: "Saint Paul, Minnesota",
+      email: "ares2170@gmail.com",
+      phone: "+1 651-231-8821"
+    }
+  };
+}
 
   // Get projects
   getProjects: async () => {
