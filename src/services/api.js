@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { portfolioData as mockPortfolioData } from '../mock';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API_BASE = `${BACKEND_URL}/api`;
 
@@ -39,15 +39,15 @@ api.interceptors.response.use(
 // Portfolio API functions
 export const portfolioAPI = {
   // Get complete portfolio data
-  getPortfolioData: async () => {
-    try {
-      const response = await api.get('/portfolio/data');
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch portfolio data:', error);
-      throw error;
-    }
-  },
+getPortfolioData: async () => {
+  try {
+    const response = await api.get('/portfolio/data');
+    return response.data;
+  } catch (error) {
+    console.error('Failed to fetch portfolio data, falling back to mock data:', error);
+    return mockPortfolioData;
+  }
+},
 
   // Get projects
   getProjects: async () => {
