@@ -170,8 +170,7 @@ const Portfolio = () => {
   const audioUrl = "https://customer-assets.emergentagent.com/job_dev-spotlight-36/artifacts/sps0q140_ElevenLabs_2025-08-26T07_55_56_Arnold_pre_sp100_s50_sb75_v3.mp3";
 
   // Load portfolio data
-  useEffect(() => {
-    useEffect(() => {
+ useEffect(() => {
   const loadPortfolioData = async () => {
     setLoading(true);
     try {
@@ -186,8 +185,8 @@ const Portfolio = () => {
     }
   };
 
-    loadPortfolioData();
-  }, [toast]);
+  loadPortfolioData();
+}, [toast]);
 
   // Initialize audio element
   useEffect(() => {
