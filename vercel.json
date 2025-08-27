@@ -1,4 +1,4 @@
-{
+
   "version": 2,
   "builds": [
     {
@@ -23,7 +23,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/frontend/index.html"
     }
   ],
   "env": {
@@ -36,4 +36,3 @@
       "runtime": "python3.9"
     }
   }
-}
