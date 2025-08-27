@@ -11,7 +11,10 @@
     },
     {
       "src": "backend/server.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "runtime": "python3.9"
+      }
     }
   ],
   "routes": [
@@ -23,15 +26,8 @@
       "src": "/(.*)",
       "dest": "frontend/build/index.html"
     }
-  ],
-  "env": {
-    "MONGO_URL": "@mongo_url",
-    "DB_NAME": "@db_name",
-    "REACT_APP_BACKEND_URL": "https://da-palmquist-portfolio.vercel.app"
-  },
-  "functions": {
-    "backend/server.py": {
-      "runtime": "python3.9"
+  ]
+}
     }
   }
 }
