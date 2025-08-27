@@ -1,15 +1,15 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "build"
-      }
+  "functions": {
+    "api/server.py": {
+      "runtime": "python3.9"
     }
-  ],
+  },
   "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/server.py"
+    },
     {
       "handle": "filesystem"
     },
@@ -17,5 +17,10 @@
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ]
+  ],
+  "env": {
+    "MONGO_URL": "@mongo_url",
+    "DB_NAME": "@db_name",
+    "REACT_APP_BACKEND_URL": "https://da-palmquist-portfolio-2025-2-git-main-da-palmquists-projects.vercel.app"
+  }
 }
