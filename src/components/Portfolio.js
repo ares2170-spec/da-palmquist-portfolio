@@ -171,24 +171,20 @@ const Portfolio = () => {
 
   // Load portfolio data
   useEffect(() => {
-    const loadPortfolioData = async () => {
-      try {
-        setLoading(true);
-        const data = await portfolioAPI.getPortfolioData();
-        setPortfolioData(data);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to load portfolio data:', err);
-        setError('Failed to load portfolio data');
-        toast({
-          title: "Loading Error",
-          description: "Unable to load portfolio data. Please refresh the page.",
-          variant: "destructive",
-        });
-      } finally {
-        setLoading(false);
-      }
-    };
+    useEffect(() => {
+  const loadPortfolioData = async () => {
+    setLoading(true);
+    try {
+      const data = await portfolioAPI.getPortfolioData();
+      setPortfolioData(data);
+      setError(null);
+    } catch (error) {
+      console.error('Failed to load portfolio data:', error);
+      // Don't set error state - API service handles fallback to mock data
+    } finally {
+      setLoading(false);
+    }
+  };
 
     loadPortfolioData();
   }, [toast]);
