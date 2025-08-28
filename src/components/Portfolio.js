@@ -8,6 +8,7 @@ import {
   Mail, 
   Phone, 
   MapPin, 
+  ExternalLink, 
   ChevronRight,
   Code,
   Palette,
@@ -15,12 +16,121 @@ import {
   Calendar,
   Lightbulb,
   Star,
-  Loader2 
+  Loader2,
+  Menu,
+  X,
+  Send
 } from 'lucide-react';
+
+// Contact Form Component
+const ContactForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    
+    // Simulate form submission
+    setTimeout(() => {
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for your message. I'll get back to you soon!",
+      });
+      setFormData({ name: '', email: '', message: '' });
+      setIsSubmitting(false);
+    }, 1000);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="grid md:grid-cols-2 gap-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
+            Name *
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            required
+            value={formData.name}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300"
+            placeholder="Your name"
+          />
+        </div>
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
+            Email *
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            value={formData.email}
+            onChange={handleChange}
+            className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300"
+            placeholder="your@email.com"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">
+          Message *
+        </label>
+        <textarea
+          id="message"
+          name="message"
+          required
+          rows={5}
+          value={formData.message}
+          onChange={handleChange}
+          className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent transition-all duration-300 resize-vertical"
+          placeholder="Tell me about your project or idea..."
+        />
+      </div>
+
+      <Button 
+        type="submit" 
+        disabled={isSubmitting}
+        className="w-full bg-amber-500 hover:bg-amber-600 text-black font-medium py-3 transition-all duration-300 disabled:opacity-50"
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            Sending...
+          </>
+        ) : (
+          <>
+            Send Message
+            <Send className="ml-2 h-4 w-4" />
+          </>
+        )}
+      </Button>
+    </form>
+  );
+};
 
 const Portfolio = () => {
   const [portfolioData, setPortfolioData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [activeSection, setActiveSection] = useState('hero');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -38,6 +148,32 @@ const Portfolio = () => {
 
     loadPortfolioData();
   }, [toast]);
+
+  // Scroll spy for navigation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveSection(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    const sections = document.querySelectorAll('section[id]');
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+    };
+  }, []);
+
+  const scrollToSection = (sectionId) => {
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    setMobileMenuOpen(false);
+  };
 
   if (loading) {
     return (
@@ -63,10 +199,61 @@ const Portfolio = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
+      {/* Fixed Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-700">
+        <div className="max-w-6xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="text-xl font-bold text-amber-400">P.D.Allen</div>
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex space-x-8">
+              {['hero', 'about', 'skills', 'experience', 'projects', 'principia', 'contact'].map((section) => (
+                <button
+                  key={section}
+                  onClick={() => scrollToSection(section)}
+                  className={`capitalize transition-all duration-300 hover:text-amber-400 ${
+                    activeSection === section ? 'text-amber-400' : 'text-slate-300'
+                  }`}
+                >
+                  {section === 'hero' ? 'Home' : section === 'principia' ? 'AI Stories' : section}
+                </button>
+              ))}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </button>
+          </div>
+
+          {/* Mobile Navigation */}
+          {mobileMenuOpen && (
+            <div className="md:hidden mt-4 pb-4 border-t border-slate-700 pt-4">
+              <div className="flex flex-col space-y-4">
+                {['hero', 'about', 'skills', 'experience', 'projects', 'principia', 'contact'].map((section) => (
+                  <button
+                    key={section}
+                    onClick={() => scrollToSection(section)}
+                    className={`capitalize text-left transition-all duration-300 hover:text-amber-400 ${
+                      activeSection === section ? 'text-amber-400' : 'text-slate-300'
+                    }`}
+                  >
+                    {section === 'hero' ? 'Home' : section === 'principia' ? 'AI Stories' : section}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </nav>
+
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <section id="hero" className="min-h-screen flex items-center justify-center relative overflow-hidden pt-20">
         <div className="max-w-6xl mx-auto px-6 py-20 text-center">
-          <div className="space-y-8">
+          <div className="space-y-8 animate-fade-in">
             <h1 className="text-5xl md:text-7xl font-light tracking-tight text-white">
               {portfolioData.hero.name}
             </h1>
@@ -76,39 +263,90 @@ const Portfolio = () => {
             <p className="text-lg md:text-xl text-slate-300 max-w-4xl mx-auto leading-relaxed">
               {portfolioData.hero.tagline}
             </p>
+            
+            {/* Call to Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
+              <Button 
+                onClick={() => scrollToSection('projects')}
+                className="bg-amber-500 hover:bg-amber-600 text-black font-medium px-8 py-4 text-lg transition-all duration-300 hover:scale-105"
+              >
+                View My Work
+                <ChevronRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => scrollToSection('contact')}
+                className="border-2 border-amber-400 text-amber-400 hover:bg-amber-400 hover:text-black px-8 py-4 text-lg transition-all duration-300"
+              >
+                Get In Touch
+              </Button>
+            </div>
           </div>
         </div>
+        
+        {/* Animated background elements */}
         <div className="absolute top-20 left-10 w-32 h-32 border border-amber-400/20 rounded-full animate-pulse"></div>
         <div className="absolute bottom-20 right-10 w-24 h-24 border border-amber-400/30 rounded-full animate-bounce"></div>
       </section>
 
       {/* About Section */}
-      <section className="py-20">
+      <section id="about" className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-light mb-6">About Me</h2>
             <div className="w-24 h-1 bg-amber-400 mx-auto"></div>
           </div>
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <p className="text-lg text-slate-300 leading-relaxed">
-              {portfolioData.about.summary}
-            </p>
-            <p className="text-lg text-slate-300 leading-relaxed">
-              {portfolioData.about.mission}
-            </p>
+          <div className="max-w-4xl mx-auto">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="space-y-6">
+                <p className="text-lg text-slate-300 leading-relaxed">
+                  {portfolioData.about.summary}
+                </p>
+                <p className="text-lg text-slate-300 leading-relaxed">
+                  {portfolioData.about.mission}
+                </p>
+                <div className="flex items-center space-x-4 text-slate-400">
+                  <MapPin className="h-5 w-5 text-amber-400" />
+                  <span>{portfolioData.hero.location}</span>
+                </div>
+              </div>
+              <div className="relative">
+                <div className="bg-gradient-to-br from-slate-800 to-slate-700 p-8 rounded-2xl border border-slate-600">
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-3">
+                      <Lightbulb className="h-6 w-6 text-amber-400" />
+                      <span className="text-xl font-medium">Innovation Focus</span>
+                    </div>
+                    <p className="text-slate-300">
+                      Combining traditional storytelling with cutting-edge AI to redefine content creation workflows and deliver immersive entertainment experiences.
+                    </p>
+                    <div className="pt-4">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Star className="h-4 w-4 text-amber-400" />
+                        <span className="text-sm text-slate-400">Specialized in AI-driven franchise development</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Star className="h-4 w-4 text-amber-400" />
+                        <span className="text-sm text-slate-400">Published comic book artist with proven track record</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Skills Section */}
-      <section className="py-20 bg-slate-800/50">
+      <section id="skills" className="py-20 bg-slate-800/50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-light mb-6">Core Competencies</h2>
             <div className="w-24 h-1 bg-amber-400 mx-auto"></div>
           </div>
           <div className="grid md:grid-cols-3 gap-8">
-            <Card className="bg-slate-700/50 border-slate-600">
+            <Card className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
               <CardHeader>
                 <div className="flex items-center space-x-3">
                   <Code className="h-6 w-6 text-amber-400" />
@@ -118,7 +356,7 @@ const Portfolio = () => {
               <CardContent>
                 <div className="space-y-3">
                   {portfolioData.skills.technical.map((skill, index) => (
-                    <Badge key={index} className="bg-slate-600 text-slate-200 mr-2 mb-2">
+                    <Badge key={index} className="bg-slate-600 text-slate-200 hover:bg-amber-400 hover:text-black transition-all duration-300 cursor-default mr-2 mb-2">
                       {skill}
                     </Badge>
                   ))}
@@ -126,7 +364,7 @@ const Portfolio = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-700/50 border-slate-600">
+            <Card className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
               <CardHeader>
                 <div className="flex items-center space-x-3">
                   <Palette className="h-6 w-6 text-amber-400" />
@@ -136,7 +374,7 @@ const Portfolio = () => {
               <CardContent>
                 <div className="space-y-3">
                   {portfolioData.skills.creative.map((skill, index) => (
-                    <Badge key={index} className="bg-slate-600 text-slate-200 mr-2 mb-2">
+                    <Badge key={index} className="bg-slate-600 text-slate-200 hover:bg-amber-400 hover:text-black transition-all duration-300 cursor-default mr-2 mb-2">
                       {skill}
                     </Badge>
                   ))}
@@ -144,7 +382,7 @@ const Portfolio = () => {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-700/50 border-slate-600">
+            <Card className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
               <CardHeader>
                 <div className="flex items-center space-x-3">
                   <Briefcase className="h-6 w-6 text-amber-400" />
@@ -154,7 +392,7 @@ const Portfolio = () => {
               <CardContent>
                 <div className="space-y-3">
                   {portfolioData.skills.business.map((skill, index) => (
-                    <Badge key={index} className="bg-slate-600 text-slate-200 mr-2 mb-2">
+                    <Badge key={index} className="bg-slate-600 text-slate-200 hover:bg-amber-400 hover:text-black transition-all duration-300 cursor-default mr-2 mb-2">
                       {skill}
                     </Badge>
                   ))}
@@ -166,7 +404,7 @@ const Portfolio = () => {
       </section>
 
       {/* Experience Section */}
-      <section className="py-20">
+      <section id="experience" className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-light mb-6">Experience</h2>
@@ -174,7 +412,7 @@ const Portfolio = () => {
           </div>
           <div className="space-y-8">
             {portfolioData.experience.map((exp, index) => (
-              <Card key={index} className="bg-slate-800/50 border-slate-600">
+              <Card key={index} className="bg-slate-800/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
                 <CardHeader>
                   <div className="flex flex-col md:flex-row md:items-center justify-between">
                     <div>
@@ -205,7 +443,7 @@ const Portfolio = () => {
       </section>
 
       {/* Projects Section */}
-      <section className="py-20 bg-slate-800/50">
+      <section id="projects" className="py-20 bg-slate-800/50">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-light mb-6">Featured Projects</h2>
@@ -213,10 +451,20 @@ const Portfolio = () => {
           </div>
           <div className="grid md:grid-cols-2 gap-8">
             {portfolioData.projects.map((project, index) => (
-              <Card key={index} className="bg-slate-700/50 border-slate-600">
+              <Card key={index} className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300 group overflow-hidden">
+                <div className="aspect-video bg-gradient-to-br from-slate-600 to-slate-700 relative overflow-hidden">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-6xl text-slate-400 group-hover:text-amber-400 transition-colors duration-300">
+                      📚
+                    </div>
+                  </div>
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
+                </div>
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-white">{project.title}</CardTitle>
+                    <CardTitle className="text-white group-hover:text-amber-400 transition-colors duration-300">
+                      {project.title}
+                    </CardTitle>
                     <Badge className="bg-amber-500 text-black">{project.status}</Badge>
                   </div>
                   <CardDescription className="text-slate-300">
@@ -227,7 +475,7 @@ const Portfolio = () => {
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-2">
                       {project.technologies.map((tech, techIndex) => (
-                        <Badge key={techIndex} variant="outline" className="border-slate-500 text-slate-300">
+                        <Badge key={techIndex} variant="outline" className="border-slate-500 text-slate-300 hover:border-amber-400 hover:text-amber-400 transition-colors duration-300">
                           {tech}
                         </Badge>
                       ))}
@@ -240,33 +488,146 @@ const Portfolio = () => {
         </div>
       </section>
 
+      {/* Principia Deep Dive Section */}
+      <section id="principia" className="py-20 relative overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-6xl font-light mb-6 text-white">
+              Principia: AI-Driven Storytelling
+            </h2>
+            <div className="w-24 h-1 bg-amber-400 mx-auto mb-6"></div>
+            <p className="text-xl text-slate-200 max-w-3xl mx-auto">
+              Experience the fusion of traditional narrative and cutting-edge AI technology. Explore character development and discover the future of AI-driven entertainment.
+            </p>
+          </div>
+
+          {/* Story Excerpts */}
+          <div className="grid lg:grid-cols-2 gap-12 mb-20">
+            {/* Excerpt 1 */}
+            <Card className="bg-slate-800/80 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                  <span>Excerpt 1: Combat Training</span>
+                </CardTitle>
+                <CardDescription className="text-slate-400">
+                  From the upcoming Principia webnovel series by D.A. Palmquist
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-slate-300 leading-relaxed mb-4">
+                    Tallen didn't like the situation. He and Misty both heard the airlock finish cycling, but no report on their status apart from Jon's order to prepare for contact. No sign of weapons fire visible from their position, either.
+                  </p>
+                  <p className="text-slate-300 leading-relaxed mb-4">
+                    <em>"Trainee, I need a colloid grenade,"</em> he ordered, <em>"Get me one from the weapons locker."</em>
+                  </p>
+                  <p className="text-slate-300 leading-relaxed mb-4">
+                    <em>"Yes, chief,"</em> Misty responded, and made her way to the flight deck above. Tallen fell back as well, taking up position behind a chair in the common area.
+                  </p>
+                  <p className="text-slate-300 leading-relaxed">
+                    He heard the sound of heavy footsteps on the ladder leading up to the deck, but didn't see anything until he heard a slightly different footfall, which he attributed to someone stepping on one of the ladder rungs mounted on the hatch...
+                  </p>
+                  <div className="mt-4 p-3 bg-slate-700/50 rounded border-l-4 border-amber-400">
+                    <p className="text-sm text-slate-400 italic">
+                      This excerpt showcases the military sci-fi tone and tactical combat scenarios that define the Principia universe.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Excerpt 2 */}
+            <Card className="bg-slate-800/80 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center space-x-2">
+                  <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+                  <span>Excerpt 2: Young Resistance</span>
+                </CardTitle>
+                <CardDescription className="text-slate-400">
+                  Character development showcase - Principia by D.A. Palmquist
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="prose prose-invert max-w-none">
+                  <p className="text-slate-300 leading-relaxed mb-4">
+                    There was a lot of commotion on the forward-most catwalk in Lady Julianna's cargo bay as the prods zip-tied the children to the deck through the floor grating in a way that immobilized them. Shakti anxiously waited in line for someone to take her for the same treatment, her young mind racing from worry at what horrible purpose they were doing this to them for.
+                  </p>
+                  <p className="text-slate-300 leading-relaxed mb-4">
+                    <em>"Pretty smart of the boss to have us tie up the kiddies like this,"</em> one of the prods, who to his credit was probably the sharpest hammer in the shed, proclaimed, <em>"Now, they can't shoot at us from below."</em>
+                  </p>
+                  <p className="text-slate-300 leading-relaxed mb-4">
+                    Shakti was too little to understand the double entendre, but she knew that nothing good could come of the prods getting their ham-fisted hands on her. She certainly didn't want to be tied up and helpless, so she let her coffee-brown eyes dart around and find her options.
+                  </p>
+                  <p className="text-slate-300 leading-relaxed">
+                    She could make a break for the railing, dive over the edge, and end it all with a headfirst plunge into the hard metal deck below, but that would only get her out of this situation – it would do nothing for the revolution...
+                  </p>
+                  <div className="mt-4 p-3 bg-slate-700/50 rounded border-l-4 border-amber-400">
+                    <p className="text-sm text-slate-400 italic">
+                      This excerpt demonstrates character development, world-building, and the emotional depth that drives the narrative forward in the Principia universe.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
       {/* Contact Section */}
-      <section className="py-20">
+      <section id="contact" className="py-20">
         <div className="max-w-6xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-light mb-6">Get In Touch</h2>
-            <div className="w-24 h-1 bg-amber-400 mx-auto"></div>
+            <div className="w-24 h-1 bg-amber-400 mx-auto mb-6"></div>
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
+              Ready to discuss your next entertainment franchise or AI-driven creative project? Let's connect.
+            </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <Card className="bg-slate-700/50 border-slate-600">
+          
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            <Card className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300 group">
               <CardContent className="pt-8 pb-8 text-center">
-                <Mail className="h-8 w-8 text-amber-400 mx-auto mb-4" />
+                <div className="w-16 h-16 bg-amber-400/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-400/20 transition-all duration-300">
+                  <Mail className="h-8 w-8 text-amber-400" />
+                </div>
                 <h3 className="text-xl font-medium text-white mb-3">Email</h3>
-                <p className="text-slate-300">{portfolioData.hero.email}</p>
+                <p className="text-slate-300 text-lg">{portfolioData.hero.email}</p>
               </CardContent>
             </Card>
-            <Card className="bg-slate-700/50 border-slate-600">
+            
+            <Card className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300 group">
               <CardContent className="pt-8 pb-8 text-center">
-                <Phone className="h-8 w-8 text-amber-400 mx-auto mb-4" />
+                <div className="w-16 h-16 bg-amber-400/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-400/20 transition-all duration-300">
+                  <Phone className="h-8 w-8 text-amber-400" />
+                </div>
                 <h3 className="text-xl font-medium text-white mb-3">Phone</h3>
-                <p className="text-slate-300">{portfolioData.hero.phone}</p>
+                <p className="text-slate-300 text-lg">{portfolioData.hero.phone}</p>
               </CardContent>
             </Card>
-            <Card className="bg-slate-700/50 border-slate-600">
+            
+            <Card className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300 group">
               <CardContent className="pt-8 pb-8 text-center">
-                <MapPin className="h-8 w-8 text-amber-400 mx-auto mb-4" />
+                <div className="w-16 h-16 bg-amber-400/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-amber-400/20 transition-all duration-300">
+                  <MapPin className="h-8 w-8 text-amber-400" />
+                </div>
                 <h3 className="text-xl font-medium text-white mb-3">Location</h3>
-                <p className="text-slate-300">{portfolioData.hero.location}</p>
+                <p className="text-slate-300 text-lg">{portfolioData.hero.location}</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Contact Form */}
+          <div className="max-w-2xl mx-auto">
+            <Card className="bg-slate-800/50 border-slate-600">
+              <CardHeader>
+                <CardTitle className="text-white text-center">Send a Message</CardTitle>
+                <CardDescription className="text-slate-400 text-center">
+                  Let's discuss your project or collaboration opportunity
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ContactForm />
               </CardContent>
             </Card>
           </div>
@@ -276,7 +637,7 @@ const Portfolio = () => {
       {/* Footer */}
       <footer className="py-8 bg-slate-900 border-t border-slate-700">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          <p className="text-slate-400">
+          <p className="text-slate-400 text-lg">
             © 2025 Peter D. Allen. Pioneering the future of AI-driven entertainment.
           </p>
         </div>
