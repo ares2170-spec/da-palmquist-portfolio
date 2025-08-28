@@ -600,14 +600,21 @@ const Portfolio = () => {
           <div className="grid md:grid-cols-2 gap-8">
             {portfolioData.projects.map((project, index) => (
               <Card key={index} className="bg-slate-700/50 border-slate-600 hover:border-amber-400/50 transition-all duration-300 group overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-slate-600 to-slate-700 relative overflow-hidden">
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-6xl text-slate-400 group-hover:text-amber-400 transition-colors duration-300">
-                      📚
-                    </div>
-                  </div>
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
-                </div>
+                <div className="aspect-video bg-slate-600 relative overflow-hidden">
+  <img 
+    src={project.image} 
+    alt={project.title}
+    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+    onError={(e) => {
+      e.target.style.display = 'none';
+      e.target.nextSibling.style.display = 'flex';
+    }}
+  />
+  <div className="absolute inset-0 bg-gradient-to-br from-slate-600 to-slate-700 items-center justify-center text-6xl text-slate-400 group-hover:text-amber-400 transition-colors duration-300" style={{display: 'none'}}>
+    📚
+  </div>
+  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
+</div>
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-white group-hover:text-amber-400 transition-colors duration-300">
@@ -637,17 +644,28 @@ const Portfolio = () => {
       </section>
 
       {/* Principia Deep Dive Section */}
-      <section id="principia" className="py-20 relative overflow-hidden">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-6xl font-light mb-6 text-white">
-              Principia: AI-Driven Storytelling
-            </h2>
-            <div className="w-24 h-1 bg-amber-400 mx-auto mb-6"></div>
-            <p className="text-xl text-slate-200 max-w-3xl mx-auto">
-              Experience the fusion of traditional narrative and cutting-edge AI technology. Explore character development and discover the future of AI-driven entertainment.
-            </p>
-          </div>
+<section id="principia" className="py-20 relative overflow-hidden">
+  {/* Jon Orvar Background with Gradient */}
+  <div className="absolute inset-0">
+    <div className="absolute inset-0 bg-gradient-to-b from-slate-900/20 via-slate-800/60 to-slate-900"></div>
+    <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800/80 to-amber-400/10"></div>
+    <img 
+      src="https://customer-assets.emergentagent.com/job_dev-spotlight-36/artifacts/3lktix58_Jon%20Orvar%20concept.jpg" 
+      alt="Jon Orvar Concept Art"
+      className="w-full h-full object-cover opacity-30"
+    />
+  </div>
+  
+  <div className="max-w-6xl mx-auto px-6 relative z-10">
+         <div className="text-center mb-16">
+  <h2 className="text-4xl md:text-6xl font-light mb-6 text-white drop-shadow-lg">
+    Principia: AI-Driven Storytelling
+  </h2>
+  <div className="w-24 h-1 bg-amber-400 mx-auto mb-6 shadow-lg"></div>
+  <p className="text-xl text-slate-200 max-w-3xl mx-auto drop-shadow-md">
+    Experience the fusion of traditional narrative and cutting-edge AI technology. Explore character development and discover the future of AI-driven entertainment.
+  </p>
+</div>
 
           {/* Story Excerpts */}
           <div className="grid lg:grid-cols-2 gap-12 mb-20">
@@ -738,43 +756,6 @@ const Portfolio = () => {
             </Card>
           </div>
 
-          {/* Concept Art Gallery */}
-          <div className="mb-20">
-            <div className="text-center mb-12">
-              <h3 className="text-3xl md:text-4xl font-light mb-4 text-white">Character Concept Art</h3>
-              <div className="w-16 h-1 bg-amber-400 mx-auto mb-4"></div>
-              <p className="text-slate-300 max-w-2xl mx-auto">
-                Original character designs showcasing the artistic development behind the compelling cast
-              </p>
-            </div>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {portfolioData.conceptArt?.map((art, index) => (
-                <Card key={index} className="bg-slate-800/80 border-slate-600 overflow-hidden group hover:border-amber-400/50 transition-all duration-300">
-                  <div className="aspect-square bg-slate-700 relative overflow-hidden">
-                    <img 
-                      src={art.image} 
-                      alt={art.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      onError={(e) => {
-                        e.target.style.display = 'none';
-                        e.target.nextSibling.style.display = 'flex';
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-600 to-slate-700 items-center justify-center text-6xl text-slate-400" style={{display: 'none'}}>
-                      🎨
-                    </div>
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
-                  </div>
-                  <CardContent className="p-4">
-                    <h4 className="text-white font-medium mb-2">{art.title}</h4>
-                    <p className="text-slate-400 text-sm">{art.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-
             {/* Excerpt 2 */}
             <Card className="bg-slate-800/80 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
               <CardHeader>
@@ -811,6 +792,43 @@ const Portfolio = () => {
           </div>
         </div>
       </section>
+
+          {/* Concept Art Gallery */}
+          <div className="mb-20">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl md:text-4xl font-light mb-4 text-white">Character Concept Art</h3>
+              <div className="w-16 h-1 bg-amber-400 mx-auto mb-4"></div>
+              <p className="text-slate-300 max-w-2xl mx-auto">
+                Original character designs showcasing the artistic development behind the compelling cast
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {portfolioData.conceptArt?.map((art, index) => (
+                <Card key={index} className="bg-slate-800/80 border-slate-600 overflow-hidden group hover:border-amber-400/50 transition-all duration-300">
+                  <div className="aspect-square bg-slate-700 relative overflow-hidden">
+                    <img 
+                      src={art.image} 
+                      alt={art.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-600 to-slate-700 items-center justify-center text-6xl text-slate-400" style={{display: 'none'}}>
+                      🎨
+                    </div>
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
+                  </div>
+                  <CardContent className="p-4">
+                    <h4 className="text-white font-medium mb-2">{art.title}</h4>
+                    <p className="text-slate-400 text-sm">{art.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
 
       {/* Contact Section */}
       <section id="contact" className="py-20">
