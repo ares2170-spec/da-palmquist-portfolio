@@ -19,8 +19,156 @@ import {
   Loader2,
   Menu,
   X,
-  Send
+  Send,
+  Volume2,
+  Play,
+  Pause,
+  SkipBack,
+  SkipForward
 } from 'lucide-react';
+
+// Audio Player Component
+const AudioPlayer = ({ audioUrl }) => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [audioRef, setAudioRef] = useState(null);
+
+  useEffect(() => {
+    if (!audioUrl) return;
+
+    const audio = new Audio(audioUrl);
+    audio.preload = 'metadata';
+    
+    const handleLoadedMetadata = () => setDuration(audio.duration);
+    const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const handleEnded = () => {
+      setIsPlaying(false);
+      setCurrentTime(0);
+    };
+
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    
+    setAudioRef(audio);
+    
+    return () => {
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+      audio.pause();
+    };
+  }, [audioUrl]);
+
+  const togglePlayPause = () => {
+    if (!audioRef) return;
+    
+    if (isPlaying) {
+      audioRef.pause();
+      setIsPlaying(false);
+    } else {
+      audioRef.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const skipTime = (seconds) => {
+    if (!audioRef) return;
+    const newTime = Math.max(0, Math.min(duration, currentTime + seconds));
+    audioRef.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
+  const formatTime = (seconds) => {
+    if (!seconds || isNaN(seconds)) return '0:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (!audioUrl) return null;
+
+  return (
+    <div className="space-y-4">
+      {/* Waveform Visualization */}
+      <div className="relative h-20 bg-slate-700/50 rounded-lg overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center space-x-1">
+          {Array.from({ length: 60 }, (_, i) => {
+            const progress = duration > 0 ? currentTime / duration : 0;
+            const barProgress = i / 60;
+            const isActive = barProgress <= progress;
+            const height = Math.random() * 60 + 20;
+            
+            return (
+              <div
+                key={i}
+                className={`w-1 rounded-full transition-all duration-300 ${
+                  isActive 
+                    ? 'bg-gradient-to-t from-amber-400 to-amber-600 opacity-100' 
+                    : 'bg-gradient-to-t from-amber-400/30 to-amber-600/30 opacity-50'
+                } ${isPlaying ? 'animate-pulse' : ''}`}
+                style={{
+                  height: `${height}%`,
+                  animationDelay: `${i * 0.1}s`,
+                  animationDuration: isActive && isPlaying ? '1.5s' : '0s'
+                }}
+              />
+            );
+          })}
+        </div>
+        
+        {duration > 0 && (
+          <div 
+            className="absolute top-0 left-0 w-1 h-full bg-amber-400 transition-all duration-200 rounded-full shadow-lg"
+            style={{ 
+              left: `${(currentTime / duration) * 100}%`,
+              transform: 'translateX(-50%)'
+            }}
+          />
+        )}
+      </div>
+
+      {/* Player Controls */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between text-sm text-slate-400">
+          <span>{formatTime(currentTime)}</span>
+          <span>{formatTime(duration)}</span>
+        </div>
+        
+        <div className="flex items-center justify-center space-x-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-slate-400 hover:text-amber-400 disabled:opacity-50"
+            onClick={() => skipTime(-15)}
+            disabled={!audioRef}
+          >
+            <SkipBack className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            className={`w-12 h-12 rounded-full ${isPlaying ? 'bg-amber-500 hover:bg-amber-600' : 'bg-amber-500 hover:bg-amber-600'} text-black transition-all duration-300 disabled:opacity-50`}
+            onClick={togglePlayPause}
+            disabled={!audioRef}
+          >
+            {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 ml-0.5" />}
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-slate-400 hover:text-amber-400 disabled:opacity-50"
+            onClick={() => skipTime(15)}
+            disabled={!audioRef}
+          >
+            <SkipForward className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Contact Form Component
 const ContactForm = () => {
@@ -536,6 +684,96 @@ const Portfolio = () => {
                 </div>
               </CardContent>
             </Card>
+
+          {/* AI Audiobook Player */}
+          <div className="mb-20">
+            <Card className="bg-slate-800/80 border-slate-600 max-w-4xl mx-auto">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center space-x-2">
+                  <Volume2 className="h-5 w-5 text-amber-400" />
+                  <span>AI Audiobook Narration</span>
+                </CardTitle>
+                <CardDescription className="text-slate-400">
+                  Multi-speaker AI voice synthesis bringing characters to life
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <AudioPlayer audioUrl={portfolioData.audiobook?.url} />
+                
+                {/* AI Voice Cast */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium text-white">AI Voice Cast:</h4>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between p-2 bg-slate-700/30 rounded">
+                      <span className="text-sm text-slate-300">Arnold (ElevenLabs AI)</span>
+                      <Badge variant="outline" className="border-amber-400/50 text-amber-400 text-xs">
+                        Narrator
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-slate-700/30 rounded">
+                      <span className="text-sm text-slate-300">Tallen</span>
+                      <Badge variant="outline" className="border-amber-400/50 text-amber-400 text-xs">
+                        Character Voice
+                      </Badge>
+                    </div>
+                    <div className="flex items-center justify-between p-2 bg-slate-700/30 rounded">
+                      <span className="text-sm text-slate-300">Misty</span>
+                      <Badge variant="outline" className="border-amber-400/50 text-amber-400 text-xs">
+                        Character Voice
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-green-400/10 border border-green-400/30 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <Volume2 className="h-4 w-4 text-green-400" />
+                    <span className="text-sm font-medium text-green-400">Live Demo Available</span>
+                  </div>
+                  <p className="text-xs text-slate-300">
+                    This is actual AI-generated narration of the Principia excerpt, created using ElevenLabs voice synthesis technology. Experience the quality and naturalness of modern AI voice generation.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Concept Art Gallery */}
+          <div className="mb-20">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl md:text-4xl font-light mb-4 text-white">Character Concept Art</h3>
+              <div className="w-16 h-1 bg-amber-400 mx-auto mb-4"></div>
+              <p className="text-slate-300 max-w-2xl mx-auto">
+                Original character designs showcasing the artistic development behind the compelling cast
+              </p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {portfolioData.conceptArt?.map((art, index) => (
+                <Card key={index} className="bg-slate-800/80 border-slate-600 overflow-hidden group hover:border-amber-400/50 transition-all duration-300">
+                  <div className="aspect-square bg-slate-700 relative overflow-hidden">
+                    <img 
+                      src={art.image} 
+                      alt={art.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-600 to-slate-700 items-center justify-center text-6xl text-slate-400" style={{display: 'none'}}>
+                      🎨
+                    </div>
+                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-300"></div>
+                  </div>
+                  <CardContent className="p-4">
+                    <h4 className="text-white font-medium mb-2">{art.title}</h4>
+                    <p className="text-slate-400 text-sm">{art.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
 
             {/* Excerpt 2 */}
             <Card className="bg-slate-800/80 border-slate-600 hover:border-amber-400/50 transition-all duration-300">
