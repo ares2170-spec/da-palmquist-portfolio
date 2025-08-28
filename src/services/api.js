@@ -50,24 +50,24 @@ export const portfolioAPI = {
               ]
             }
           ],
-          projects: [
-            {
-              title: "Principia: AI-Driven Multimedia Franchise",
-              description: "Revolutionary entertainment franchise combining traditional storytelling with AI technology",
-              status: "In Development",
-              technologies: ["AI Voice Synthesis", "Character Design", "Story Development"],
-              image: "https://customer-assets.emergentagent.com/job_dev-spotlight-36/artifacts/3lktix58_Jon%20Orvar%20concept.jpg",
-              link: null
-            },
-            {
-              title: "Frontier: 2170 Volume 01 - Easy Street",
-              description: "Original comic book series showcasing futuristic storytelling and character development",
-              status: "Published",
-              technologies: ["Digital Art", "Character Design", "World Building"],
-              image: "https://customer-assets.emergentagent.com/job_amber-portfolio-1/artifacts/kvmhk4eb_image.png",
-              link: "https://amazon.com/dp/your-book-link"
-            }
-          ],
+         projects: [
+  {
+    title: "Principia: AI-Driven Multimedia Franchise",
+    description: "Revolutionary entertainment franchise combining traditional storytelling with AI technology",
+    status: "In Development", 
+    technologies: ["AI Voice Synthesis", "Character Design", "Story Development"],
+    image: "https://customer-assets.emergentagent.com/job_dev-spotlight-36/artifacts/3lktix58_Jon%20Orvar%20concept.jpg",
+    link: null
+  },
+  {
+    title: "Frontier: 2170 Volume 01 - Easy Street",
+    description: "Original comic book series showcasing futuristic storytelling and character development published on Amazon KDP",
+    status: "Published",
+    technologies: ["Digital Art", "Character Design", "World Building", "Self-Publishing"],
+    image: "https://customer-assets.emergentagent.com/job_amber-portfolio-1/artifacts/kvmhk4eb_image.png",
+    link: "https://amazon.com/dp/your-book-link"
+  }
+]
           // Add concept art for the gallery
           conceptArt: [
             {
